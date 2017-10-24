@@ -130,12 +130,84 @@ void runEomLee(){
 
 
 
-
-
-
-
-
 int main(){
+    cout << "Initial Tag Ammount" << endl;
+    cin >> initialTag;
+    
+    cout << "Final Tag Ammount" << endl;
+    cin >> finalTag;
+    
+    cout << "Delta Tag Ammount" << endl;
+    cin >> deltaTag;
+
+    cout << "Initial Frame Size" << endl;
+    cin >> initialFrameSize;
+    
+    int maxRepetition;
+    cout << "Number of Repetitions per Iteration" << endl;
+    cin >> maxRepetition;
+    
+    int algorithm;
+    cout << "Algorithm:" << endl << "1- Lower Bound" << endl << "2- Eom-Lee" << endl;
+    cin >> algorithm;
+    
+    /*
+    int maxRepetition = 2000;
+    
+    initialTag = 100;
+    finalTag = 1000;
+    deltaTag = 100;
+    initialFrameSize = 64;
+    */
+    srand (time(NULL));
+    
+    for(int index_tag = initialTag; index_tag <= finalTag; index_tag += deltaTag){
+    
+        int avarageSlots = 0;
+        int avarageColision = 0;
+        int avarageIdle = 0;
+        double avarageTime = 0;
+        for(int repetition = 0; repetition < maxRepetition; repetition++){
+        
+            tag_ammount = index_tag;
+            frameSize = initialFrameSize;
+            if(algorithm == 1){
+                runLowerBound();
+            }
+            else{
+                runEomLee();
+            }
+            
+            avarageSlots += totalSlots;
+            avarageColision += totalCollisions;
+            avarageIdle += totalIdles;
+            avarageTime += totalTime;            
+        }
+        totalSlotsMap       [index_tag] = avarageSlots      /maxRepetition;
+        totalCollisionsMap   [index_tag] = avarageColision   /maxRepetition;
+        totalIdlesMap       [index_tag] = avarageIdle       /maxRepetition;
+        totalTimeMap        [index_tag] = avarageTime       /maxRepetition;
+        
+        cout << "INDEX " << index_tag << endl;
+        cout << "  TOTAL SLOTS " << totalSlotsMap[index_tag] << endl;
+        cout << "  TOTAL COLLISIONS " << totalCollisionsMap[index_tag] << endl;
+        cout << "  TOTAL IDLES " << totalIdlesMap[index_tag] << endl;
+        cout << "  TOTAL TIME " << totalTimeMap[index_tag] << endl;
+    
+    
+    }
+
+
+
+}
+
+
+
+
+
+
+
+int Test(){
     
     int maxRepetition = 2000;
     
@@ -156,7 +228,7 @@ int main(){
         
             tag_ammount = index_tag;
             frameSize = initialFrameSize;
-            runLowerBound();
+            runEomLee();
             
             avarageSlots += totalSlots;
             avarageColision += totalCollisions;
