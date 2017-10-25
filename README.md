@@ -11,3 +11,5 @@ Para rodar o simulador, entre na pasta _src_ e digite o segunte comando:
 *make simulation*
 
 Agora o executavel do programa está na pasta _bin_.
+
+Esse programa gera como resultado imagens de gráficos de comparação entre as execuções. Os mesmos se encontram na pasta _plots/results_.
