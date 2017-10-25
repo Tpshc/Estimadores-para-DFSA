@@ -5,7 +5,7 @@ Os algoritmos anti colisão implementados foram:
   - __Lower Bound__
   - __Eom Lee__
   
-##How to Run
+## How to Run
 Para rodar o simulador, entre na pasta _src_ e digite o segunte comando:
 
 *make simulation*
