@@ -23,8 +23,10 @@ int frameSize;
 int tag_ammount;
 
 
+int slots2[3000];
 bitset<3000> slots;
 bitset<3000> collisions;
+
 
 int totalSlots;
 map<int,int> totalSlotsLowerBound;
@@ -50,25 +52,27 @@ void runLowerBound(){
     while(frameSize){
         totalSlots+= frameSize;
         
-        slots.reset();
-        collisions.reset();
+        fill(slots2, slots2+frameSize, 0);
 
         for(int tag=0; tag<tag_ammount; tag++){
             int random =  rand() % frameSize;
-            if(slots[random] && !collisions[random])
-                collisions.set(random);
-            else slots.set(random);
-        }   
-        
-        
-        totalCollisions += collisions.count();
-        totalIdles += frameSize - slots.count();
-        
-        tag_ammount -= slots.count() - collisions.count();
-        frameSize = collisions.count()<<1;
+            slots2[random]++;
+            
+        }
+        int success = 0;
+        int localCollisions = 0;
+        for(int i =0; i < frameSize; i++){
+            if(slots2[i]==0) totalIdles++;
+            else if (slots2[i]==1) success++;
+            else if(slots2[i]>=2) localCollisions++;
+        }
+        tag_ammount -= success;
+        frameSize = localCollisions<<1;
+        totalCollisions += localCollisions;
     }
     
 }
+
 int estimate(int collisions, int success, int L){
     double bprox, yprox, temp, backlog, y1=2,expBprox;
     
@@ -93,23 +97,23 @@ void runEomLee(){
     while(frameSize > 0){
         totalSlots+= frameSize;
         
-        slots.reset();
-        collisions.reset();
+        fill(slots2, slots2+frameSize, 0);
 
         for(int tag=0; tag<tag_ammount; tag++){
             int random =  rand() % frameSize;
-            if(slots[random] && !collisions[random])
-                collisions.set(random);
-            else slots.set(random);
-        }   
-        
-        
-        totalCollisions += collisions.count();
-        totalIdles += frameSize - slots.count();
-        
-        int success = slots.count() - collisions.count();
+            slots2[random]++;
+            
+        }
+        int success = 0;
+        int localCollisions = 0;
+        for(int i =0; i < frameSize; i++){
+            if(slots2[i]==0) totalIdles++;
+            else if (slots2[i]==1) success++;
+            else if(slots2[i]>=2) localCollisions++;
+        }
         tag_ammount -= success;
-        frameSize = estimate(collisions.count(),success,frameSize);
+        frameSize = estimate(localCollisions,success,frameSize);
+        totalCollisions += localCollisions;
     }
 }
 
