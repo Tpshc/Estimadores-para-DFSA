@@ -1,6 +1,6 @@
 CC = g++ -std=c++11
 OBJDIR = ../bin/
-CFLAGS = -fopenmp -O3 -g
+CFLAGS = -O3 
 
 
 simulation:Simulate.cpp

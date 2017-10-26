@@ -12,10 +12,6 @@ set ylabel 'Número de Slots'
 set output 'results/slotsTotal.png'
 plot "data/slotsTotal.txt" using 1:2 title "Lower Bound" with linespoints ls 1, "data/slotsTotal.txt" using 1:3 title "Eom Lee" with linespoints ls 2
 
-set ylabel 'Tempo para Identificação (s)'
-set output 'results/tempo.png'
-plot "data/tempo.txt" using 1:2 title "Lower Bound" with linespoints ls 1, "data/tempo.txt" using 1:3 title "Eom Lee" with linespoints ls 2
-
 set ylabel 'Número de Slots Vazios'
 set output 'results/slotsVazios.png'
 plot "data/slotsVazios.txt" using 1:2 title "Lower Bound" with linespoints ls 1, "data/slotsVazios.txt" using 1:3 title "Eom Lee" with linespoints ls 2
@@ -24,3 +20,6 @@ set ylabel 'Número de Slots em Colisão'
 set output 'results/slotsColisao.png'
 plot "data/slotsColisao.txt" using 1:2 title "Lower Bound" with linespoints ls 1, "data/slotsColisao.txt" using 1:3 title "Eom Lee" with linespoints ls 2
 
+set ylabel 'Tempo para Identificação (s)'
+set output 'results/tempo.png'
+plot "data/tempo.txt" using 1:2 title "Lower Bound" with linespoints ls 1, "data/tempo.txt" using 1:3 title "Eom Lee" with linespoints ls 2

@@ -7,6 +7,7 @@
 #include <math.h>
 #include <fstream>
 
+#include <chrono>
 using namespace std;
 
 
@@ -37,7 +38,6 @@ int totalIdles;
 map<int,int> totalIdlesLowerBound;
 map<int,int> totalIdlesEomLee;
 
-double totalTime;
 map<double,double> totalTimeLowerBound;
 map<double,double> totalTimeEomLee;
 
@@ -47,10 +47,6 @@ void runLowerBound(){
     totalSlots = 0;
     totalCollisions = 0;
     totalIdles = 0;
-    totalTime = 0;
-    
-    clock_t tStart = clock();
-    
     while(frameSize){
         totalSlots+= frameSize;
         
@@ -69,13 +65,10 @@ void runLowerBound(){
         totalIdles += frameSize - slots.count();
         
         tag_ammount -= slots.count() - collisions.count();
-        frameSize = collisions.count()*2;
-        
+        frameSize = collisions.count()<<1;
     }
-    totalTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
     
 }
-
 int estimate(int collisions, int success, int L){
     double bprox, yprox, temp, backlog, y1=2,expBprox;
     
@@ -83,24 +76,19 @@ int estimate(int collisions, int success, int L){
         bprox = L/((y1*collisions)+success);
         expBprox = exp(-1/bprox);
         yprox = (1-expBprox) / (bprox*(1-(1 + (1/bprox))*expBprox));
-        backlog = yprox*collisions;
         temp = y1;
         y1 = yprox;
     }
-    while(y1-temp > ERROR);
+    while(abs(y1-temp) > ERROR);
 
-    return (int) round(backlog);
+    return (int) round(yprox*collisions);
 }
-
 
 void runEomLee(){
 
     totalSlots = 0;
     totalCollisions = 0;
     totalIdles = 0;
-    totalTime = 0;
-    
-    clock_t tStart = clock();
     
     while(frameSize > 0){
         totalSlots+= frameSize;
@@ -122,47 +110,54 @@ void runEomLee(){
         int success = slots.count() - collisions.count();
         tag_ammount -= success;
         frameSize = estimate(collisions.count(),success,frameSize);
-        //cout << frameSize << endl;
-        
     }
-    totalTime = (double)(clock() - tStart)/CLOCKS_PER_SEC;
-    
-    
 }
 
 
-int main(){
-    cout << "Initial Tag Ammount" << endl;
-    cin >> initialTag;
-    
-    cout << "Final Tag Ammount" << endl;
-    cin >> finalTag;
-    
-    cout << "Delta Tag Ammount" << endl;
-    cin >> deltaTag;
-
-    cout << "Initial Frame Size" << endl;
-    cin >> initialFrameSize;
-    
+int main(int argc, char **argv){
     int maxRepetition;
-    cout << "Number of Repetitions per Iteration" << endl;
-    cin >> maxRepetition;
+    if(argc<5){
+        cout << "Initial Tag Ammount" << endl;
+        cin >> initialTag;
+        
+        cout << "Final Tag Ammount" << endl;
+        cin >> finalTag;
+        
+        cout << "Delta Tag Ammount" << endl;
+        cin >> deltaTag;
+
+        cout << "Initial Frame Size" << endl;
+        cin >> initialFrameSize;
+        
+        cout << "Number of Repetitions per Iteration" << endl;
+        cin >> maxRepetition;
+
+    }
+    else{
+        initialTag = stoi(argv[1]);
+        finalTag = stoi(argv[2]);
+        deltaTag = stoi(argv[3]);
+        initialFrameSize = stoi(argv[4]);
+        maxRepetition = stoi(argv[5]);
+    }
 
     srand (time(NULL));
+
+    for(int index_tag = initialTag; index_tag <= finalTag; index_tag += deltaTag){
+     
+        for(int chosen_algorithm = 0; chosen_algorithm < 2; chosen_algorithm ++){
     
-    for(int chosen_algorithm = 0; chosen_algorithm < 2; chosen_algorithm ++){
-    
-    
-        for(int index_tag = initialTag; index_tag <= finalTag; index_tag += deltaTag){
-        
             int avarageSlots = 0;
             int avarageCollision = 0;
             int avarageIdle = 0;
             double avarageTime = 0;
+            
             for(int repetition = 0; repetition < maxRepetition; repetition++){
             
                 tag_ammount = index_tag;
                 frameSize = initialFrameSize;
+                
+                auto beginTime = chrono::high_resolution_clock::now();
                 
                 if(chosen_algorithm == 0){
                     runLowerBound();
@@ -171,11 +166,15 @@ int main(){
                     runEomLee();
                 }
                 
+                auto endTime = chrono::high_resolution_clock::now();
+                
+                
                 avarageSlots += totalSlots;
                 avarageCollision += totalCollisions;
                 avarageIdle += totalIdles;
-                avarageTime += totalTime;            
+                avarageTime += (double)( (double)chrono::duration_cast<chrono::nanoseconds>(endTime-beginTime).count() / 1000000000.0 );           
             }
+            
             if(chosen_algorithm == 0){
             
                 totalSlotsLowerBound        [index_tag] = avarageSlots      /maxRepetition;
