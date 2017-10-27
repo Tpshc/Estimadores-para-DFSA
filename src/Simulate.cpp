@@ -148,14 +148,12 @@ int main(int argc, char **argv){
     srand (time(NULL));
 
     for(int index_tag = initialTag; index_tag <= finalTag; index_tag += deltaTag){
-     
         for(int chosen_algorithm = 0; chosen_algorithm < 2; chosen_algorithm ++){
     
             int avarageSlots = 0;
             int avarageCollision = 0;
             int avarageIdle = 0;
             double avarageTime = 0;
-            
             for(int repetition = 0; repetition < maxRepetition; repetition++){
             
                 tag_ammount = index_tag;
